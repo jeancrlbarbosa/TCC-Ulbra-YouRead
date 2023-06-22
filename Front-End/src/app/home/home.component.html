@@ -1,0 +1,524 @@
+
+    <div>
+            <div class="navbar navbar-expand-sm navbar-primary bg-primary navbar-shadow container-align nav-home">
+        
+        
+        
+                <div class="form-home">
+        
+                    <div class="row">
+                        <div class="col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                            <button class="text-button float-left" style="margin-top: 14px;" (click)="selectNavbar()">
+                                <span><i class="fas fa-bars fa-lg"></i></span>
+                            </button>
+                        </div>
+                        <div class="col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                            <button *ngIf="pesquisa" class="text-button float-right" style="margin-top: 14px;" (click)="pesquisar()">
+                                <span><i class="fas fa-search fa-lg"></i></span>
+                            </button>
+                        </div>
+                        <div class="col-sm-7 col-md-7 col-lg-7 col-xl-7">
+                            <div class="input-group input-header float-left">
+                                <input id="pasha2" name="pass" type="text" minlength="8" class="form-control"
+                                    style="margin-top: 16.5px;" [(ngModel)]="pesquisa" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                            <div class="text-logo home float-right" style="margin-top: 14px;">
+                                YOUREAD
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ng-template #recursiveListTmpl let-paginas="paginas">
+                <div *ngFor="let lista of paginas">
+                    <ul class="menu-itens">
+                        <li class="menu-list" (click)="lista.click = !lista.click">
+                            <div class="list-name" (click)="executaFuncao(lista)">
+                                <i *ngIf="(lista.pagfil.length > 0) && lista.click"
+                                    class="list-icon-sub-click fas fa-sort-down fa-lg"></i>
+                                <i *ngIf="(lista.pagfil.length > 0) && (!lista.click)"
+                                    class="list-icon-sub fas fa-sort-down fa-lg"></i>
+                                {{lista.descam}}
+                            </div>
+                        </li>
+                    </ul>
+                    <div *ngIf="lista.click" class="menu-itens">
+                        <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ paginas: lista.pagfil }"></ng-container>
+                    </div>
+                </div>
+            </ng-template>
+            <div>
+                <div id="menu" class="menu-hide" style="overflow:hidden; overflow-y:scroll;">
+                    <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ paginas: paginasList }"></ng-container>
+                </div>
+                <div [ngClass]="{'shadow-menu' : isCollapsed, 'shadow-menu-hide': !isCollapsed}" (click)="selectNavbar()">
+                </div>
+            </div>
+
+        <div class="container-sm container-md container-lg container-xl home-container" *ngIf="type === 'leitor'">
+            <div class="container-sm container-md container-lg container-xl home-anuncios">
+                <img *ngIf="capitulo.anunciosE" class="anuncio-img" [src]="transform(capitulo.anunciosE)">
+            </div>
+            <span *ngIf="capitulo && capitulo.anterior" (click)="lerLivro({codliv: capitulo.codliv, codcap: capitulo.anterior})"><i class="anterior-leitor botao-logo fas fa-chevron-left fa-lg"></i></span>
+            <div class="text-logo text-leitor home float-right">
+                {{'Capítulo ' + (capitulo && capitulo.numcap ? capitulo.numcap : '')}}
+            </div>
+            <span *ngIf="capitulo && capitulo.proximo" (click)="lerLivro({codliv: capitulo.codliv, codcap: capitulo.proximo})"><i class="proximo-leitor botao-logo fas fa-chevron-right fa-lg"></i></span>
+            <div id="leitor" class="container-sm container-md container-lg container-xl home-leitor float-center">
+                <img *ngFor="let arquivo of capitulo.arquivosList; let i = index" class="livro-img" [src]="transform(arquivo)">
+            </div>
+            <div class="container-sm container-md container-lg container-xl home-anuncios">
+                <img *ngIf="capitulo.anunciosD" class="anuncio-img" [src]="transform(capitulo.anunciosD)">
+            </div>
+
+        </div>
+
+        <div class="container-sm container-md container-lg container-xl home-container-livro" *ngIf="type === 'livro'">
+
+            <div class="container-sm container-md container-lg container-xl" *ngIf="subType === 'minhas-obras'">
+                        
+                <div class="row">
+
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <button class="text-button float-right" style="font-weight: bolder; height: 60px; margin-top: 10px;" (click)="adicionarLivro()">Adicionar Livro</button>
+                    </div>
+                </div>
+            </div>
+            <div *ngFor="let livro of livrosList; let i = index" class="home-container-lista form-home">
+                    <div [ngClass]="{'container-sm container-md container-lg container-xl home-livro-cabecalho-hover': livro.visualizar,
+                                     'container-sm container-md container-lg container-xl home-livro-cabecalho': true}"
+                         (click)="expandirCapitulos(livro)">
+                            <div *ngIf="!livro.bas64s" class="container-sm container-md container-lg container-xl home-livro-capa">
+                            </div>
+                            <img *ngIf="livro.bas64s" class="container-sm container-md container-lg container-xl home-livro-capa" 
+                                 [src]="transform(livro)">
+                            <div class="container-sm container-md container-lg container-xl home-cabecalho-info">
+                        
+                                    <div class="form-row flex-row flex-wrap align-items-center">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                                <div class="input-group input-header float-left">
+                                                    <input [id]="retornaNomeCampo(i, '_titulo')" [name]="retornaNomeCampo(i, '_titulo')" [(ngModel)]="livro.titulo" type="text" minlength="1" maxlength="100" class="input-label form-control"
+                                                    [readonly]="livro.visualizar" required>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="!livro.visualizar" class="form-group col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                                <br>
+                                                <label class="btn btn-primary btn-lg text-logo text-label text-button float-ri">
+                                                    Adicionar Arquivo
+                                                    <input type="file" style="display:none" multiple="false" (change)="upload($event, i, 1)" accept=".jpeg, .JPG, .jpg, .PNG, .png">
+                    
+                                                </label>
+                                            </div>
+                                            <div *ngIf="!livro.visualizar" class="form-group col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                                <br>
+                                                <button class="btn btn-primary btn-lg text-logo text-label text-button float-left" (click)="removerCapa(i)">Remover Capa</button>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                                <div class="input-group input-header float-left">
+                                                    <label class="text-normal texto-sub">{{'Autor: ' + livro.nomaut}}</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                                <div class="input-group input-header float-left">
+                                                    <label class="text-normal texto-sub">{{'Capítulos: ' + retornaCapitulos(livro)}}</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                                <div class="input-group input-header float-left">
+                                                    <label class="text-normal texto-sub">{{'Acessos: ' + livro.valace}}</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                                <button *ngIf="livro.visualizar && ((subType === 'favoritos') || (subType === 'pesquisar')) && (this.cad.controls.codusu.value !== livro.codusu)"  
+                                                        [ngClass]="{'text-button-favorito float-right': livro.adifav,
+                                                                    'text-button float-right': true}" 
+                                                        (click)="salvarFavorito(livro)">
+                                                    <span><i class="fas fa-star fa-lg"></i></span>
+                                                </button>
+                                            </div>
+                                            <div *ngIf="(livro.visualizar) && (subType === 'minhas-obras')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                                <br>
+                                                <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="editarLivro(livro.codliv)">Editar</button>
+                                            </div>
+                                            <div *ngIf="!livro.visualizar"  class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                                <label class="text-normal texto-sub capitulo-label" style="margin: 0;" for="tipusu">Visível</label>
+                                                <ng-select style="width: 98% !important;" [clearable]="false" [items]="simnaoList" bindLabel="descri" bindValue="codigo"
+                                                           [id]="retornaNomeCampo(i, '_visliv')" [name]="retornaNomeCampo(i, '_visliv')" [(ngModel)]="livro.visliv">
+                                                </ng-select>
+                                            </div>
+                                            <div *ngIf="!livro.visualizar" class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                                                <label class="text-normal texto-sub capitulo-label" style="margin: 0;" for="tipusu">Gênero/Tag</label>
+                                                <ng-select style="width: 98% !important;" [items]="generosLivrosList" bindLabel="descri" bindValue="codigo"
+                                                         [id]="retornaNomeCampo(i, '_vingen')" [name]="retornaNomeCampo(i, '_vingen')" [(ngModel)]="livro.vingen">
+                                                </ng-select>
+                                            </div>
+                                            <div *ngIf="!livro.visualizar" class="col-sm-12 col-md-2 col-lg-2 col-xl-2">
+                                                <button *ngIf="livro.vingen" class="text-button float-left" style="margin-top: 25px;" (click)="adicionarGenero(livro)">Vincular
+                                
+                                                </button>
+                                            </div>
+                                            <div *ngIf="!livro.visualizar" class="col-sm-12 col-md-3 col-lg-3 col-xl-3" style="margin-bottom: 16px;">
+                                                <label *ngIf="(cad.controls.reqace.value === 'S') && (cad.controls.monace.value === 'S')" class="text-normal texto-sub capitulo-label" style="margin: 0;" for="tipusu">Monetiza</label>
+                                                <ng-select *ngIf="(cad.controls.reqace.value === 'S') && (cad.controls.monace.value === 'S')"
+                                                           style="width: 98% !important;" [clearable]="false" [items]="simnaoList" bindLabel="descri" bindValue="codigo"
+                                                           [id]="retornaNomeCampo(i, '_habmon')" [name]="retornaNomeCampo(i, '_habmon')" [(ngModel)]="livro.habmon">
+                                                </ng-select>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                                <label class="text-logo text-label" style="color: #E0A408;">GÊNEROS/TAGS</label><br>
+                                                <div *ngFor="let genero of livro.generosList let z = index">
+
+                                                    <label class="text-normal texto-sub genero-tag">{{'#' + genero.tagger}}</label>
+                                                    <span *ngIf="!livro.visualizar" (click)="excluirGeneroLivro(z, livro)" style="color: #E0A408;"><i class="fas fa-times fa-lg icon-exclude"></i></span>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="livro.desliv" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                                <label class="text-normal texto-sub capitulo-label"
+                                                style="margin: 0; font-weight: bolder;">Descrição do Livro:</label>
+                                                <textarea class="text-area text-normal-text-area input-label form-control" [readonly]="livro.visualizar"
+                                                [id]="retornaNomeCampo(i, '_desliv')" [name]="retornaNomeCampo(i, '_desliv')" [(ngModel)]="livro.desliv"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                            </div>
+
+                    </div>
+                    <div *ngIf="livro.isColapse" class="container-sm container-md container-lg container-xl home-livro-lista">
+                    
+                        <div class="form-row flex-row flex-wrap align-items-center">
+                            <div class="row" style="width: 98%;">
+                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                    <label class="text-logo text-label" style="color: #E0A408;">CAPÍTULOS</label><br>
+                                </div>
+                                <div *ngIf="!livro.visualizar" class="form-group col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                    <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="adicionarCapitulo(livro)">Novo Capítulo</button>
+                                </div>
+                            </div>
+                    
+                            <div *ngFor="let capitulo of livro.capitulosList; let x = index" style="width: 98%;">
+                    
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                        <div class="linha-divisoria"></div>
+                                    </div>
+                                </div>
+                                <div class="row row-capitulo-hover" (click)="expandirCapituloConfig(capitulo)" style="width: 99%;">
+                                    <div *ngIf="!livro.visualizar" class="col-sm-12 col-md-1 col-lg-1 col-xl-1">
+                                        <div class="input-group input-header float-left">
+                                            <input type="number" minlength="8" (focusout)="trocarIndex(livro, capitulo, capitulo.ordcap, x)" class="input-label form-control"
+                                                [id]="retornaNomeCampo(i, '_ordcap', x)" [name]="retornaNomeCampo(i, '_ordcap', x)" [(ngModel)]="capitulo.ordcap">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-1 col-lg-1 col-xl-1">
+                                        <label class="text-normal texto-sub capitulo-label">Capítulo-</label>
+                                    </div>
+                                    <div [ngClass]="{'col-sm-12 col-md-11 col-lg-11 col-xl-11': livro.visualizar,
+                                                     'col-sm-12 col-md-10 col-lg-10 col-xl-10': true}">
+                                        <div class="input-group input-header float-left">
+                                            <input style="margin-left: -23px;" minlength="1" minlength="100" class="text-normal-input input-label form-control"
+                                                   [id]="retornaNomeCampo(i, '_numcap', x)" [name]="retornaNomeCampo(i, '_numcap', x)" [(ngModel)]="capitulo.numcap" 
+                                                   [readonly]="livro.visualizar" required>
+                                            <button *ngIf="livro.visualizar" class="text-button float-left" (click)="lerLivro(capitulo)">Ler</button>
+                                        </div>
+                                    </div>
+                    
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                        <label *ngIf="capitulo.datatu" class="text-normal texto-sub capitulo-label" style="font-weight: bolder;">
+                                        {{'Data de Atualização: ' + retornaDataFormatada(capitulo.datatu)}}</label>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                        <label class="text-normal texto-sub capitulo-label" style="font-weight: bolder;">
+                                            {{'Visualizações: ' + capitulo.numvie}}</label>
+                                    </div>
+                                </div>
+                                <div *ngIf="capitulo.isColapse" class="row">
+                                    <div *ngIf="!livro.visualizar" class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                        <label class="text-normal texto-sub capitulo-label" style="margin: 0;">Vísivel</label>
+                                        <ng-select style="width: 98% !important;" [clearable]="false" [items]="simnaoList" bindLabel="descri" bindValue="codigo"
+                                                   [id]="retornaNomeCampo(i, '_viscap', x)" [name]="retornaNomeCampo(i, '_viscap', x)" [(ngModel)]="capitulo.viscap">
+                                        </ng-select>
+                                    </div>
+                                    <div *ngIf="!livro.visualizar" class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                        <br>
+                                        <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="excluirCapitulo(x, livro)">Remover Capitulo</button>
+                                    </div>
+                                    <div *ngIf="capitulo.descap" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                        <div class="input-group input-header float-left">
+                                            <label class="text-normal texto-sub capitulo-label"
+                                                style="margin: 0; font-weight: bolder;">Descrição do
+                                                Capitulo:</label>
+                                            <textarea class="text-area text-normal-text-area input-label form-control" 
+                                                     [id]="retornaNomeCampo(i, '_descap', x)" [name]="retornaNomeCampo(i, '_descap', x)" [(ngModel)]="capitulo.descap" 
+                                                     [readonly]="livro.visualizar"></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <div *ngIf="!livro.visualizar" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                        <br>
+                                        <label class="btn btn-primary btn-lg text-logo text-label text-button float-ri">
+                                            Selecionar Arquivos
+                                            <input type="file" style="display:none" multiple="false" (change)="upload($event, i, 2, x)" accept=".jpeg, .JPG, .jpg, .PNG, .png">
+                                        </label>
+                                    </div>
+                                    <div *ngFor="let arquivo of capitulo.arquivosList; let y = index" class="col-sm-12 col-md-2 col-lg-2 col-xl-2">
+                                        <div>
+                                            <div class="input-group input-header float-left">
+                                                <label class="text-normal texto-sub capitulo-label" style="margin: 0;">
+                                                    {{'Arquivo ' + (y + 1) +': ' + arquivo.nomarq + '.' + arquivo.tiparq}}</label>
+                                                <input type="number" minlength="8" class="input-label form-control" (focusout)="trocarIndexArquivo(capitulo, arquivo, arquivo.ordarq, y)"
+                                                      [id]="retornaNomeCampo(i, '_ordarq', (x + '_' + y))" [name]="retornaNomeCampo(i, '_ordarq', (x + '_' + y))" 
+                                                      [(ngModel)]="arquivo.ordarq" required>
+                                                <button class="text-button float-right" (click)="excluirArquivo(y, capitulo)">
+                                                    <span><i class="fas fa-times fa-lg"></i></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                        </div>
+                    </div>
+
+
+                    <div class="container-sm container-md container-lg container-xl home-livro-lista">
+                        <div class="form-row flex-row flex-wrap align-items-center">
+
+                            <div class="row" style="width: 100%;">
+                                <div *ngIf="validaCampos(7)" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                    <button class="text-button float-right" style="margin-top: 25px;" (click)="salvarLivro()">Salvar Livro
+                                    </button>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                    <div class="linha-divisoria"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+
+        <div class="container-sm container-md container-lg container-xl home-container-config" *ngIf="type === 'configuracoes'">
+
+            <div id="container">
+                <form [formGroup]="cad" #cads="ngForm">
+                    <div class="form-row flex-row flex-wrap align-items-center">
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" style="margin-left: -20px;">CONFIGURAÇÕES</label>
+                        </div>
+
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" style="margin-top: 30px;">Informações do Usuário</label>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <div class="linha-divisoria" style="margin-top: 10px;"></div>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="logusu">Username</label>
+                            <input id="logusu" name="logusu" type="text" class="form-control" minlength="1" formControlName="logusu" required>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="nomusu">Nome do Perfil</label>
+                            <input id="nomusu" name="nomusu" type="text" class="form-control" minlength="1" formControlName="nomusu" required>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="emausu">E-mail</label>
+                            <input id="emausu" name="emausu" type="text" (focusout)="ValidateEmail()" minlength="1" class="form-control" formControlName="emausu" required>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="tipusu">Tipo de Usuário</label>
+                            <ng-select [items]="tipoUsuarioList" bindLabel="descri" bindValue="codigo" (change)="trocaTipoUsuario()" formControlName="tipusu" required>
+                            </ng-select>
+                        </div>
+                        <div *ngIf="cad.controls.tipusu.value === 'A'" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="nomaut">Pseudónimo</label>
+                            <input id="nomaut" name="nomaut" type="text" minlength="1" class="form-control" formControlName="nomaut">
+                        </div>
+                        <div *ngIf="cad.controls.tipusu.value === 'A'" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="apanom">Aparece Pseudónimo</label>
+                            <ng-select [items]="simnaoList" bindLabel="descri" bindValue="codigo" formControlName="apanom">
+                            </ng-select>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A' && ((cad.controls.monace.value || 'N') === 'S')) || (cad.controls.tipusu.value === 'S')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="cnpjpf">CPF/CNPJ</label>
+                            <input id="cnpjpf" [textMask]="{mask: (removeCaracteresEspeciais(cad.controls.cnpjpf.value || '').length <= 11 ? cpf : cnpj)}" valicadoCPFCNPJ 
+                            name="cnpjpf" type="text" class="form-control" minlength="1" formControlName="cnpjpf" [required]="(this.cad.controls.tipusu.value === 'A') && (this.cad.controls.monace.value === 'S')">
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <br>
+                            <button *ngIf="validaCampos(1)" class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="salvarInformacoesPerfil()">Salvar</button>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" style="margin-top: 30px;" for="logusu">Segurança</label>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <div class="linha-divisoria" style="margin-top: 10px;"></div>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 45px;">
+                            <label class="text-logo text-label" for="pashas">Senha Atual</label>
+                            <div class="input-group">
+                                <input id="pashas" name="pashas" type="password" minlength="8" class="form-control" formControlName="pashas" required>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="pasha2">Nova Senha</label>
+                            <div class="input-group">
+                                <input id="pasha2" name="pasha2" [type]="(showPassRep ? 'text' : 'password')" minlength="8" class="form-control" (focusout)="validatePassword('pasha2')" formControlName="pasha2" required>
+                                <span *ngIf="!showPassRep" (click)="senha('showPassRep', true)"><i class="icon-login fas fa-eye fa-lg"></i></span>
+                                <span *ngIf="showPassRep" (click)="senha('showPassRep', false)"><i class="icon-login fas fa-eye-slash fa-lg"></i></span>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="pasha3">Repetir Nova Senha</label>
+                            <div class="input-group">
+                                <input id="pasha3" name="pasha3" [type]="(showPassRep2 ? 'text' : 'password')" minlength="8" class="form-control" (focusout)="validatePassword('pasha3')" formControlName="pasha3" required>
+                                <span *ngIf="!showPassRep2" (click)="senha('showPassRep2', true)"><i class="icon-login fas fa-eye fa-lg"></i></span>
+                                <span *ngIf="showPassRep2" (click)="senha('showPassRep2', false)"><i class="icon-login fas fa-eye-slash fa-lg"></i></span>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <br>
+                            <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="alterarSenha()">Alterar Senha</button>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && ((cad.controls.permon.value === 'S') || (cad.controls.reqace.value === 'S'))" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" style="margin-top: 30px;" for="logusu">Monetização</label>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && ((cad.controls.permon.value === 'S') || (cad.controls.reqace.value === 'S'))" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <div class="linha-divisoria" style="margin-top: 10px;"></div>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && (cad.controls.reqace.value === 'S')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="monace">Monetização Ativa</label>
+                            <ng-select [items]="simnaoList" bindLabel="descri" bindValue="codigo" formControlName="monace" required>
+                            </ng-select>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && (cad.controls.reqace.value === 'S')"class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <br>
+                            <button *ngIf="validaCampos(2)" class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="salvarInformacoesPerfil()">Salvar</button>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && (cad.controls.permon.value === 'S') && (cad.controls.reqace.value === 'N')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="motmon">Porque Monetizar</label>
+                            <div class="input-group input-header float-left">
+                                <textarea class="text-area text-normal-text-area input-label form-control" id="motmon" name="motmon"
+                                    formControlName="motmon"></textarea>
+                            </div>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && (cad.controls.permon.value === 'S') && (cad.controls.reqace.value === 'N')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <br>
+                            <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" style="margin-top: 20px" (click)="requisitarMonetizacao()">Requisitar</button>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && ((cad.controls.permon.value === 'S') || (cad.controls.reqace.value === 'S')) && (requisitaMonetizacaoList.length > 0)" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="pasha2">Requisições de Monetização</label>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && ((cad.controls.permon.value === 'S') || (cad.controls.reqace.value === 'S'))" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <div *ngFor="let requerimento of requisitaMonetizacaoList">
+                                <label class="text-normal texto-sub">{{'Requisição dia ' + retornaDataFormatada(requerimento.datreq) + ': ' +
+                                    (requerimento.status === 'A' ? 'Aceita' : (requerimento.status === 'E' ? 'Aguardando Resposta' : 'Rejeitada'))}}</label><br>
+                            </div>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" style="margin-top: 30px;" for="logusu">Gênero/Tags</label>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <div class="linha-divisoria" style="margin-top: 10px;"></div>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="tagger">Gêneros/Tag</label>
+                            <input id="tagger" name="tagger" type="text" class="form-control" (focusout)="verificaEspacamento()" minlength="1" formControlName="tagger" required>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="pubger">Gênero Público</label>
+                            <ng-select [items]="simnaoList" bindLabel="descri" bindValue="codigo" formControlName="pubger" [required]="cad.controls.tagger.valid">
+                            </ng-select>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 45px">
+                            <br>
+                            <button class="btn btn-primary btn-lg text-logo text-label text-button float-right"(click)="limparGenero()">Limpar</button>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && validaCampos(4)" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <br>
+                            <button class="btn btn-primary btn-lg text-logo text-label text-button float-right"(click)="salvarGenero()">Salvar</button>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A') && (generosList.length > 0)" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 45px">
+                            <label class="text-logo text-label" for="pasha2">Lista de Gêneros/Tags</label>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'A')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <div *ngFor="let genero of generosList; let i = index">
+                                <label class="text-normal texto-sub genero-tag" (click)="selecionaEditarGenero(i)">
+                                    {{'Gêneros/Tag: #' + genero.tagger + ', ' + (genero.pubger === 'S' ? 'Público' : 'Privado')}}</label>
+                                    <span style="color: #E0A408;" (click)="excluirGenero(i)"><i class="fas fa-times fa-lg icon-exclude"></i></span><br>
+                            </div>
+                        </div>
+
+                        <div *ngIf="(cad.controls.tipusu.value === 'S')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" style="margin-top: 30px;" for="logusu">Anúncios</label>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'S')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <div class="linha-divisoria" style="margin-top: 10px;"></div>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'S')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="desanu">Descrição Anúncio</label>
+                            <input id="desanu" name="desanu" type="text" class="form-control" minlength="1" formControlName="desanu" required>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'S')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="prianu">Prioridade do Anúncio</label>
+                            <ng-select [items]="prioridadeAnuncioList" bindLabel="descri" bindValue="codigo" formControlName="prianu" required>
+                            </ng-select>
+                        </div>
+                        <div *ngIf="(cad.controls.tipusu.value === 'S')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label class="text-logo text-label" for="status">Status do Anúncio</label>
+                            <ng-select [items]="ativoList" bindLabel="descri" bindValue="codigo" formControlName="status" required>
+                            </ng-select>
+                        </div>
+
+                        <div *ngIf="(cad.controls.tipusu.value === 'S') && validaCampos(5)" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <br>
+                            <label class="btn btn-primary btn-lg text-logo text-label text-button float-right">
+                                Adicionar Arquivo
+                                <input type="file" style="display:none" formControlName="files_" multiple="false" (change)="upload($event)" accept=".jpeg, .JPG, .jpg, .PNG, .png">
+
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <div class="form-row flex-row flex-wrap align-items-center">
+                    <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 45px">
+                        <div *ngFor="let arquivo of arquivosSelecionadosList; let i = index">
+                            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 45px">
+                                <label class="text-logo text-label" for="status">Selecionar Lado Onde Será Mostrado</label>
+                                <label class="text-normal texto-sub capitulo-label" style="margin: 0;">{{'Arquivo ' + (i + 1) + ': ' + arquivo.desarq + '.' + arquivo.tiparq}}</label>
+                                    <ng-select [id]="i" [clearable]="false" [items]="ladoList" bindLabel="descri" bindValue="codigo" (change)="validaLado(arquivo.ladanu, i, $event)" [(ngModel)]="arquivo.ladanu">
+                                    </ng-select>
+                                    <br>
+                                <button class="btn btn-primary btn-lg text-logo text-label text-button float-right"(click)="excluirArquivoAnuncio(i)">Remover</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="(cad.controls.tipusu.value === 'S')" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 45px">
+                        <br>
+                        <button class="btn btn-primary btn-lg text-logo text-label text-button float-right"(click)="limparAnuncio()">Limpar</button>
+                    </div>
+                    <div *ngIf="(cad.controls.tipusu.value === 'S') && validaCampos(6)" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 45px">
+                        <br>
+                        <button class="btn btn-primary btn-lg text-logo text-label text-button float-right"(click)="salvarAnuncio()">Salvar</button>
+                    </div>
+                    <div *ngIf="(cad.controls.tipusu.value === 'S') && (anunciosList.length > 0)" anunciosclass="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 45px">
+                        <label class="text-logo text-label" for="pasha2">Lista de Anúcios Cadastrados</label>
+                    </div>
+                    <div *ngIf="(cad.controls.tipusu.value === 'S') && (anunciosList.length > 0)" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+                        <div *ngFor="let anuncio of anunciosList; let i = index">
+                            <label class="text-normal texto-sub genero-tag" (click)="selecionarAnuncio(i)">
+                                {{'Anúncio: ' + anuncio.desanu + ',  Prioridade: ' + (anuncio.prianu === 'A' ? 'Alta' : (anuncio.prianu === 'M' ? 'Médio' : 'Baixo')) +
+                                  ', Status: ' + (anuncio.status === 'A' ? 'Ativo' : 'Desativado')}}</label>
+                                <span (click)="excluirAnuncio(i)" style="position: absolute; color: #E0A408;"><i class="fas fa-times fa-lg icon-exclude"></i></span><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

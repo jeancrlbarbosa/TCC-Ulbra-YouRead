@@ -1,0 +1,152 @@
+<div id="container" *ngIf="type === 'login'">
+    <p class="text-logo">YOUREAD</p>
+    <form [formGroup]="cad" #cads="ngForm">
+        <div class="form-row flex-row flex-wrap align-items-center">
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="logusu">Login</label>
+                <input id="logusu" name="logusu" type="text" class="form-control" minlength="1" formControlName="logusu" required>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="pashas">Senha</label>
+                <div class="input-group">
+                    <input id="pashas" name="pashas" [type]="(showPass ? 'text' : 'password')" minlength="1" class="form-control" formControlName="pashas" required>
+                    <span *ngIf="!showPass" (click)="senha('showPass', true)"><i class="icon-login fas fa-eye fa-lg"></i></span>
+                    <span *ngIf="showPass" (click)="senha('showPass', false)"><i class="icon-login fas fa-eye-slash fa-lg"></i></span>
+                </div>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <br>
+                <p class="text-logo text-label text-regular float-right" (click)="rotas('recuperar-senha')">Esqueci Minha Senha?</p>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <br>
+                <br>
+                <button *ngIf="validaCampos(1)" class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="login()">Entrar</button>
+                <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="rotas('sign')">Criar Conta</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="container" *ngIf="type === 'recuperar-senha'">
+    <p class="text-logo">YOUREAD</p>
+    <form [formGroup]="cad" #cads="ngForm">
+        <div class="form-row flex-row flex-wrap align-items-center">
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="emausu">E-mail</label>
+                <input id="emausu" name="emausu" type="text" (focusout)="ValidateEmail()" minlength="1" class="form-control" formControlName="emausu" required>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <br>
+                <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="rotas('login')">Voltar</button>
+                <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="gerarCodigo()">Enviar Código</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="container" *ngIf="type === 'valida-codigo'">
+    <p class="text-logo">YOUREAD</p>
+    <form [formGroup]="cad" #cads="ngForm">
+        <div class="form-row flex-row flex-wrap align-items-center">
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="codrec">Código de Recuperação de Senha</label>
+                <input id="codrec" name="codrec" type="text" class="form-control" minlength="1" formControlName="codrec" required>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <br>
+                <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="rotas('login')">Voltar</button>
+                <button *ngIf="cad.valid" class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="verificaCodigo()">Verificar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="container" *ngIf="type === 'nova-senha'">
+    <p class="text-logo">YOUREAD</p>
+    <form [formGroup]="cad" #cads="ngForm">
+        <div class="form-row flex-row flex-wrap align-items-center">
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="pass">Nova Senha</label>
+                <div class="input-group">
+                    <input id="pashas" name="pashas" [type]="(showPass ? 'text' : 'password')" minlength="8" class="form-control" (focusout)="validatePassword('pashas')" formControlName="pashas" required>
+                    <span *ngIf="!showPass" (click)="senha('showPass', true)"><i class="icon-login fas fa-eye fa-lg"></i></span>
+                    <span *ngIf="showPass" (click)="senha('showPass', false)"><i class="icon-login fas fa-eye-slash fa-lg"></i></span>
+                </div>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="pasha2">Repetir Nova Senha</label>
+                <div class="input-group">
+                    <input id="pasha2" name="pass" [type]="(showPassRep ? 'text' : 'password')" minlength="8" class="form-control" (focusout)="validatePassword('pasha2')" formControlName="pasha2" required>
+                    <span *ngIf="!showPassRep" (click)="senha('showPassRep', true)"><i class="icon-login fas fa-eye fa-lg"></i></span>
+                    <span *ngIf="showPassRep" (click)="senha('showPassRep', false)"><i class="icon-login fas fa-eye-slash fa-lg"></i></span>
+                </div>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <br>
+                <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="recuperar()">Voltar</button>
+                <button *ngIf="cad.valid"  class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="salvarSenha()">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="container" *ngIf="type === 'sign'">
+    <p class="text-logo">YOUREAD</p>
+    <form [formGroup]="cad" #cads="ngForm">
+        <div class="form-row flex-row flex-wrap align-items-center">
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="logusu">Username</label>
+                <input id="logusu" name="logusu" type="text" class="form-control" minlength="1" formControlName="logusu" required>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="pass">Senha</label>
+                <div class="input-group">
+                    <input id="pashas" name="pashas" [type]="(showPass ? 'text' : 'password')" minlength="8" class="form-control" (focusout)="validatePassword('pashas')" formControlName="pashas" required>
+                    <span *ngIf="!showPass" (click)="senha('showPass', true)"><i class="icon-login fas fa-eye fa-lg"></i></span>
+                    <span *ngIf="showPass" (click)="senha('showPass', false)"><i class="icon-login fas fa-eye-slash fa-lg"></i></span>
+                </div>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="pasha2">Repetir Nova Senha</label>
+                <div class="input-group">
+                    <input id="pasha2" name="pass" [type]="(showPassRep ? 'text' : 'password')" minlength="8" class="form-control" (focusout)="validatePassword('pasha2')" formControlName="pasha2" required>
+                    <span *ngIf="!showPassRep" (click)="senha('showPassRep', true)"><i class="icon-login fas fa-eye fa-lg"></i></span>
+                    <span *ngIf="showPassRep" (click)="senha('showPassRep', false)"><i class="icon-login fas fa-eye-slash fa-lg"></i></span>
+                </div>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="emausu">E-mail</label>
+                <input id="emausu" name="emausu" type="text" (focusout)="ValidateEmail()" minlength="1" class="form-control" formControlName="emausu" required>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="nomusu">Nome do Perfil</label>
+                <input id="nomusu" name="nomusu" type="text" class="form-control" minlength="1" formControlName="nomusu" required>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="tipusu">Tipo de Usuário</label>
+                <ng-select [items]="tipoUsuarioList" bindLabel="descri" bindValue="codigo" (change)="trocaTipoUsuario()" formControlName="tipusu" required>
+                </ng-select>
+            </div>
+            <div *ngIf="cad.controls.tipusu.value === 'A'" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="nomaut">Pseudónimo</label>
+                <input id="nomaut" name="nomaut" type="text" minlength="1" class="form-control" formControlName="nomaut">
+            </div>
+            <div *ngIf="cad.controls.tipusu.value === 'A'" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="apanom">Aparece Pseudónimo</label>
+                <ng-select [items]="simnaoList" bindLabel="descri" bindValue="codigo" formControlName="apanom">
+                </ng-select>
+            </div>
+            <div *ngIf="cad.controls.tipusu.value === 'S'" class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <label class="text-logo text-label" for="cnpjpf">CPF/CNPJ</label>
+                <input id="cnpjpf" [textMask]="{mask: (removeCaracteresEspeciais(cad.controls.cnpjpf.value || '').length <= 11 ? cpf : cnpj)}" valicadoCPFCNPJ 
+                name="cnpjpf" type="text" class="form-control" minlength="1" formControlName="cnpjpf" required>
+            </div>
+            <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <br>
+                <button class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="rotas('login')">Voltar</button>
+                <button *ngIf="validaCampos(1)" class="btn btn-primary btn-lg text-logo text-label text-button float-right" (click)="criarUsuario()">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>

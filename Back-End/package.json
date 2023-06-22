@@ -1,0 +1,31 @@
+{
+  "name": "tcc-back",
+  "version": "1.0.0",
+  "description": "Youread Back-End",
+  "main": "electron.js",
+  "scripts": {
+    "start": "electron electron.js",
+    "dev": "nodemon express.js",
+    "express": "node express.js",
+    "electron": "electron .",
+    "package": "electron-packager . YOUREAD --overwrite --arch=ia32 --prune=true --icon=icone.ico --version-string.CompanyName=\"TCC\" --version-string.FileDescription=\"Biblioteca Virtual Youread\" --version-string.ProductName=\"YOUREAD\""
+  },
+  "author": "Jean Carlo Barbosa",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "nodemailer": "^6.9.1",
+    "nodemon": "^2.0.22",
+    "pg": "^8.10.0",
+    "uninstall": "^0.0.0"
+  },
+  "devDependencies": {
+    "electron": "^12.0.1",
+    "electron-packager": "^15.2.0"
+  }
+}
